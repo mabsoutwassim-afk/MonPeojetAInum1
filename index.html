@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Science Explorer</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+        #chat-box { border: 1px solid #ccc; padding: 20px; height: 300px; overflow-y: scroll; margin-bottom: 10px; border-radius: 8px; }
+        input { width: 70%; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Physics & Science AI Assistant</h2>
+    <div id="chat-box"></div>
+    <input type="text" id="userInput" placeholder="Ask about physics...">
+    <button id="sendBtn">Send</button>
+
+    <script>
+        document.getElementById('sendBtn').onclick = async () => {
+            const input = document.getElementById('userInput');
+            const chatBox = document.getElementById('chat-box');
+            const userText = input.value;
+            
+            chatBox.innerHTML += `<p><b>You:</b> ${userText}</p>`;
+            
+            // We call our own proxy endpoint, NOT Hugging Face directly
+            const response = await fetch('/api/chat', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: userText })
+            });
+
+            const data = await response.json();
+            chatBox.innerHTML += `<p><b>AI:</b> ${data.reply}</p>`;
+        };
+    </script>
+</body>
+</html>
