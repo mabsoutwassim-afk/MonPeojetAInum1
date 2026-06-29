@@ -16,14 +16,17 @@
     <button id="sendBtn">Send</button>
 
     <script>
-        document.getElementById('sendBtn').onclick = async () => {
-            const input = document.getElementById('userInput');
-            const chatBox = document.getElementById('chat-box');
-            const userText = input.value;
-            
-            chatBox.innerHTML += `<p><b>You:</b> ${userText}</p>`;
-            
-            // We call our own proxy endpoint, NOT Hugging Face directly
+    document.getElementById('sendBtn').onclick = async () => {
+        const input = document.getElementById('userInput');
+        const chatBox = document.getElementById('chat-box');
+        const userText = input.value;
+        if (!userText) return; // Prevent empty sends
+        
+        chatBox.innerHTML += `<p><b>You:</b> ${userText}</p>`;
+        input.value = ''; // Clear input
+        chatBox.innerHTML += `<p><i>AI is thinking...</i></p>`;
+
+        try {
             const response = await fetch('/api/chat', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -31,9 +34,14 @@
             });
 
             const data = await response.json();
+            // Remove "AI is thinking..." and show response
+            chatBox.lastElementChild.remove();
             chatBox.innerHTML += `<p><b>AI:</b> ${data.reply}</p>`;
-        };
-        
-    </script>
+        } catch (error) {
+            chatBox.innerHTML += `<p style="color:red;">Error reaching server.</p>`;
+        }
+    };
+</script>
+
 </body>
 </html>
