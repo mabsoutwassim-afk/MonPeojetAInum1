@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     const { prompt } = req.body;
 
     try {
-        const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-3B-Instruct", {
+        const response = await fetch("https://api-inference.huggingface.co/models/microsoft/phi-2", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${process.env.wassim_HFToken}`,
