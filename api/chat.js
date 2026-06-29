@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-3.1-8B-Instruct", {
     method: "POST",
     headers: {
-        "Authorization": `Bearer ${process.env.wassimHFToken}`,
+        "Authorization": `Bearer ${process.env.wassim_HFToken}`,
         "Content-Type": "application/json"
     },
     // Most chat models expect the 'inputs' or 'messages' format
