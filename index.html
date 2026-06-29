@@ -2,46 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Science Explorer</title>
     <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
-        #chat-box { border: 1px solid #ccc; padding: 20px; height: 300px; overflow-y: scroll; margin-bottom: 10px; border-radius: 8px; }
-        input { width: 70%; padding: 10px; }
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+        body { font-family: 'Segoe UI', sans-serif; max-width: 700px; margin: 40px auto; padding: 20px; background-color: var(--bg); color: var(--text); }
+        h2 { color: var(--primary); text-align: center; }
+        #chat-box { 
+            border: 2px solid #e2e8f0; padding: 20px; height: 400px; 
+            overflow-y: auto; margin-bottom: 20px; border-radius: 12px; 
+            background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .message { margin-bottom: 15px; padding: 10px; border-radius: 8px; }
+        .user { background: #dbeafe; text-align: right; }
+        .ai { background: #f1f5f9; border-left: 4px solid var(--primary); }
+        .input-group { display: flex; gap: 10px; }
+        input { flex-grow: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; }
+        button { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
+
     <h2>Physics & Science AI Assistant</h2>
     <div id="chat-box"></div>
-    <input type="text" id="userInput" placeholder="Ask about physics...">
-    <button id="sendBtn">Send</button>
+    <div class="input-group">
+        <input type="text" id="userInput" placeholder="Ask about physics, space, or ISS...">
+        <button id="sendBtn">Send</button>
+    </div>
 
     <script>
-    document.getElementById('sendBtn').onclick = async () => {
-        const input = document.getElementById('userInput');
         const chatBox = document.getElementById('chat-box');
-        const userText = input.value;
-        if (!userText) return; // Prevent empty sends
-        
-        chatBox.innerHTML += `<p><b>You:</b> ${userText}</p>`;
-        input.value = ''; // Clear input
-        chatBox.innerHTML += `<p><i>AI is thinking...</i></p>`;
+        const input = document.getElementById('userInput');
 
-        try {
-            const response = await fetch('/api/chat', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: userText })
-            });
+        document.getElementById('sendBtn').onclick = async () => {
+            const userText = input.value;
+            if (!userText) return;
+            
+            chatBox.innerHTML += `<div class="message user"><b>You:</b> ${userText}</div>`;
+            input.value = '';
+            chatBox.innerHTML += `<div class="message ai" id="loading"><i>AI is thinking...</i></div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
 
-            const data = await response.json();
-            // Remove "AI is thinking..." and show response
-            chatBox.lastElementChild.remove();
-            chatBox.innerHTML += `<p><b>AI:</b> ${data.reply}</p>`;
-        } catch (error) {
-            chatBox.innerHTML += `<p style="color:red;">Error reaching server.</p>`;
-        }
-    };
-</script>
+            try {
+                const response = await fetch('/api/chat', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt: userText })
+                });
 
+                const data = await response.json();
+                document.getElementById('loading').remove();
+                chatBox.innerHTML += `<div class="message ai"><b>AI:</b> ${data.reply}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                document.getElementById('loading').remove();
+                chatBox.innerHTML += `<div class="message ai" style="color:red;">Error: Could not reach server.</div>`;
+            }
+        };
+    </script>
 </body>
 </html>
