@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     const response = await fetch("https://api-inference.huggingface.co/models/deepseek-ai/DeepSeek-V3", {
         method: "POST",
         headers: {
-            "Authorization": `Bearer ${process.env.wassim_dev_appHFToken}`, // The token is stored in Vercel Environment Variables
+            "Authorization": `Bearer ${process.env.wassimHFToken}`, // The token is stored in Vercel Environment Variables
             "Content-Type": "application/json"
         },
         body: JSON.stringify({ inputs: prompt })
