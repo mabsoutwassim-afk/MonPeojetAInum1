@@ -16,22 +16,47 @@
             --success: #16a34a;
             --danger: #dc2626;
             --warning: #f59e0b;
+            --shadow: rgba(15, 23, 42, 0.08);
+            --chat-user: #dbeafe;
+            --chat-ai: #f1f5f9;
+            --calc-bg: #0f172a;
+            --special-1: #fef3c7;
+            --special-1-text: #92400e;
+        }
+
+        body.dark {
+            --bg: #020817;
+            --panel: #0f172a;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --light: #1e293b;
+            --chat-user: #1d4ed8;
+            --chat-ai: #1e293b;
+            --calc-bg: #020817;
+            --special-1: #3b2f0a;
+            --special-1-text: #fbbf24;
+            --shadow: rgba(2, 6, 23, 0.5);
         }
 
         * { box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            max-width: 1280px;
+            max-width: 1440px;
             margin: 40px auto;
             padding: 20px;
             background: linear-gradient(135deg, #eff6ff 0%, var(--bg) 100%);
             color: var(--text);
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        body.dark {
+            background: linear-gradient(135deg, #020817 0%, #0f172a 100%);
         }
 
         .app-shell {
             display: grid;
-            grid-template-columns: 1.7fr 1fr;
+            grid-template-columns: 1.7fr 1.1fr;
             gap: 24px;
             align-items: start;
         }
@@ -40,7 +65,7 @@
             background: var(--panel);
             border: 2px solid var(--light);
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 10px 30px var(--shadow);
             padding: 22px;
         }
 
@@ -50,15 +75,34 @@
             text-align: center;
         }
 
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .mode-toggle {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .mode-toggle:hover { background: var(--primary-dark); }
+
         #chat-box {
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--light);
             padding: 20px;
             height: 400px;
             overflow-y: auto;
             margin-bottom: 20px;
             border-radius: 12px;
-            background: #f8fafc;
-            box-shadow: inset 0 1px 3px rgba(148, 163, 184, 0.2);
+            background: rgba(148, 163, 184, 0.04);
+            box-shadow: inset 0 1px 3px rgba(148, 163, 184, 0.18);
         }
 
         .message {
@@ -70,12 +114,12 @@
         }
 
         .user {
-            background: #dbeafe;
+            background: var(--chat-user);
             text-align: right;
         }
 
         .ai {
-            background: #f1f5f9;
+            background: var(--chat-ai);
             border-left: 4px solid var(--primary);
         }
 
@@ -84,12 +128,14 @@
             gap: 10px;
         }
 
-        input {
+        input, select {
             flex-grow: 1;
             padding: 12px 14px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--light);
             border-radius: 10px;
             font-size: 1rem;
+            background: transparent;
+            color: var(--text);
         }
 
         button {
@@ -107,9 +153,10 @@
             background: var(--primary-dark);
         }
 
-        .calculator-panel {
-            position: sticky;
-            top: 20px;
+        .science-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
 
         .quick-actions {
@@ -128,8 +175,17 @@
             border-radius: 8px;
         }
 
+        body.dark .small-btn {
+            background: #0f172a;
+            border-color: #334155;
+        }
+
         .small-btn:hover {
             background: #dbeafe;
+        }
+
+        body.dark .small-btn:hover {
+            background: #1e293b;
         }
 
         .task-list {
@@ -147,12 +203,21 @@
             padding: 9px 10px;
         }
 
+        body.dark .task-btn {
+            background: #0f172a;
+            border-color: #334155;
+        }
+
         .task-btn:hover {
             background: #dbeafe;
         }
 
+        body.dark .task-btn:hover {
+            background: #1e293b;
+        }
+
         #calc-display {
-            background: #0f172a;
+            background: var(--calc-bg);
             color: white;
             min-height: 72px;
             border-radius: 12px;
@@ -176,8 +241,18 @@
             font-size: 1rem;
         }
 
+        body.dark .calc-btn {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+
         .calc-btn.operator {
             background: #dbeafe;
+        }
+
+        body.dark .calc-btn.operator {
+            background: #0f172a;
+            border: 1px solid #334155;
         }
 
         .calc-btn.equal {
@@ -190,9 +265,14 @@
             color: var(--danger);
         }
 
+        body.dark .calc-btn.clear {
+            background: #4b1010;
+            color: #fecaca;
+        }
+
         .calc-btn.special {
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--special-1);
+            color: var(--special-1-text);
         }
 
         .scientific-controls {
@@ -206,13 +286,88 @@
             display: grid;
         }
 
-        @media (max-width: 860px) {
+        .section-card {
+            background: rgba(148, 163, 184, 0.04);
+            border: 1px solid var(--light);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .section-title {
+            margin: 0 0 12px;
+            font-size: 1.05rem;
+            color: var(--primary);
+        }
+
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .formula-item {
+            background: rgba(37, 99, 235, 0.04);
+            border: 1px solid var(--light);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .formula-item strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .formula-item code {
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .unit-converter {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .unit-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .convert-btn {
+            height: fit-content;
+            align-self: end;
+        }
+
+        .result-box {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(22, 163, 74, 0.08);
+            border: 1px solid rgba(22, 163, 74, 0.3);
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        @media (max-width: 1200px) {
             .app-shell {
                 grid-template-columns: 1fr;
             }
 
-            .calculator-panel {
-                position: static;
+            .science-workspace {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            }
+        }
+
+        @media (max-width: 860px) {
+            .unit-converter {
+                grid-template-columns: 1fr;
+            }
+
+            .formula-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -220,74 +375,148 @@
 <body>
     <div class="app-shell">
         <section class="panel ai-panel">
-            <h2>Physics & Science AI Assistant</h2>
+            <div class="topbar">
+                <h2 style="margin:0;">Physics & Science AI Assistant</h2>
+                <button id="darkModeToggle" class="mode-toggle">Dark mode</button>
+            </div>
             <div id="chat-box"></div>
             <div class="input-group">
-                <input type="text" id="userInput" placeholder="Ask about physics, space, or type a math expression...">
+                <input type="text" id="userInput" placeholder="Ask about physics, space, math, chemistry, or formula help...">
                 <button id="sendBtn">Send</button>
             </div>
         </section>
 
-        <aside class="panel calculator-panel" id="calculatorPanel">
-            <h3>Math Calculator</h3>
+        <aside class="panel science-workspace" id="scienceWorkspace">
+            <div class="section-card">
+                <h3 style="margin-top:0;">Math Calculator</h3>
 
-            <div class="quick-actions">
-                <button class="small-btn" id="modeToggle">Scientific mode</button>
-                <button class="small-btn" id="solveAiBtn">Solve with AI</button>
+                <div class="quick-actions">
+                    <button class="small-btn" id="modeToggle">Scientific mode</button>
+                    <button class="small-btn" id="solveAiBtn">Solve with AI</button>
+                </div>
+
+                <div class="task-list">
+                    <button class="task-btn" data-expression="12 * 8">12 × 8</button>
+                    <button class="task-btn" data-expression="45 + 87">45 + 87</button>
+                    <button class="task-btn" data-expression="(120 / 5) + 18">(120 / 5) + 18</button>
+                    <button class="task-btn" data-expression="sqrt(81) + 9">sqrt(81) + 9</button>
+                    <button class="task-btn" data-expression="(3 + 5) * 7">(3 + 5) × 7</button>
+                    <button class="task-btn" data-expression="2 ^ 8">2^8</button>
+                </div>
+
+                <div id="calc-display">0</div>
+
+                <div class="scientific-controls">
+                    <button class="calc-btn special" data-value="sin(">sin</button>
+                    <button class="calc-btn special" data-value="cos(">cos</button>
+                    <button class="calc-btn special" data-value="tan(">tan</button>
+                    <button class="calc-btn special" data-value="pi">π</button>
+
+                    <button class="calc-btn special" data-value="log(">log</button>
+                    <button class="calc-btn special" data-value="ln(">ln</button>
+                    <button class="calc-btn special" data-value="sqrt(">√</button>
+                    <button class="calc-btn special" data-value="^">xʸ</button>
+
+                    <button class="calc-btn special" data-value="abs(">abs</button>
+                    <button class="calc-btn special" data-value="exp(">exp</button>
+                    <button class="calc-btn special" data-value="e">e</button>
+                    <button class="calc-btn special" data-value="DEL">⌫</button>
+                </div>
+
+                <div class="calc-grid">
+                    <button class="calc-btn clear" data-value="clear">C</button>
+                    <button class="calc-btn operator" data-value="(">(</button>
+                    <button class="calc-btn operator" data-value=")">)</button>
+                    <button class="calc-btn operator" data-value="/">÷</button>
+
+                    <button class="calc-btn" data-value="7">7</button>
+                    <button class="calc-btn" data-value="8">8</button>
+                    <button class="calc-btn" data-value="9">9</button>
+                    <button class="calc-btn operator" data-value="*">×</button>
+
+                    <button class="calc-btn" data-value="4">4</button>
+                    <button class="calc-btn" data-value="5">5</button>
+                    <button class="calc-btn" data-value="6">6</button>
+                    <button class="calc-btn operator" data-value="-">−</button>
+
+                    <button class="calc-btn" data-value="1">1</button>
+                    <button class="calc-btn" data-value="2">2</button>
+                    <button class="calc-btn" data-value="3">3</button>
+                    <button class="calc-btn operator" data-value="+">+</button>
+
+                    <button class="calc-btn" data-value="0" style="grid-column: span 2;">0</button>
+                    <button class="calc-btn" data-value=".">.</button>
+                    <button class="calc-btn equal" data-value="equals">=</button>
+                </div>
             </div>
 
-            <div class="task-list">
-                <button class="task-btn" data-expression="12 * 8">12 × 8</button>
-                <button class="task-btn" data-expression="45 + 87">45 + 87</button>
-                <button class="task-btn" data-expression="(120 / 5) + 18">(120 / 5) + 18</button>
-                <button class="task-btn" data-expression="sqrt(81) + 9">sqrt(81) + 9</button>
-                <button class="task-btn" data-expression="(3 + 5) * 7">(3 + 5) × 7</button>
-                <button class="task-btn" data-expression="2 ^ 8">2^8</button>
+            <div class="section-card">
+                <h4 class="section-title">Physics Formulas</h4>
+                <div class="formula-grid">
+                    <div class="formula-item">
+                        <strong>Speed</strong>
+                        <code>v = d / t</code>
+                    </div>
+                    <div class="formula-item">
+                        <strong>Force</strong>
+                        <code>F = m × a</code>
+                    </div>
+                    <div class="formula-item">
+                        <strong>Energy</strong>
+                        <code>E = m × c²</code>
+                    </div>
+                    <div class="formula-item">
+                        <strong>Ohm's Law</strong>
+                        <code>V = I × R</code>
+                    </div>
+                    <div class="formula-item">
+                        <strong>Wave</strong>
+                        <code>v = f × λ</code>
+                    </div>
+                    <div class="formula-item">
+                        <strong>Power</strong>
+                        <code>P = W / t</code>
+                    </div>
+                </div>
             </div>
 
-            <div id="calc-display">0</div>
+            <div class="section-card">
+                <h4 class="section-title">Unit Converter</h4>
+                <div class="unit-converter">
+                    <div class="unit-box">
+                        <label for="unitValue">Value</label>
+                        <input id="unitValue" type="number" value="1" step="any">
+                    </div>
 
-            <div class="scientific-controls">
-                <button class="calc-btn special" data-value="sin(">sin</button>
-                <button class="calc-btn special" data-value="cos(">cos</button>
-                <button class="calc-btn special" data-value="tan(">tan</button>
-                <button class="calc-btn special" data-value="pi">π</button>
+                    <button class="convert-btn" id="convertBtn">Convert</button>
 
-                <button class="calc-btn special" data-value="log(">log</button>
-                <button class="calc-btn special" data-value="ln(">ln</button>
-                <button class="calc-btn special" data-value="sqrt(">√</button>
-                <button class="calc-btn special" data-value="^">xʸ</button>
+                    <div class="unit-box">
+                        <label for="unitType">Unit</label>
+                        <select id="unitType">
+                            <option value="length">Length</option>
+                            <option value="mass">Mass</option>
+                            <option value="temperature">Temperature</option>
+                        </select>
+                    </div>
+                </div>
 
-                <button class="calc-btn special" data-value="abs(">abs</button>
-                <button class="calc-btn special" data-value="exp(">exp</button>
-                <button class="calc-btn special" data-value="e">e</button>
-                <button class="calc-btn special" data-value="DEL">⌫</button>
-            </div>
+                <div class="unit-converter" style="margin-top:12px;">
+                    <div class="unit-box">
+                        <label for="fromUnit">From</label>
+                        <select id="fromUnit"></select>
+                    </div>
 
-            <div class="calc-grid">
-                <button class="calc-btn clear" data-value="clear">C</button>
-                <button class="calc-btn operator" data-value="(">(</button>
-                <button class="calc-btn operator" data-value=")">)</button>
-                <button class="calc-btn operator" data-value="/">÷</button>
+                    <div style="display:flex;align-items:end;justify-content:center;padding-bottom:10px;">
+                        <strong>→</strong>
+                    </div>
 
-                <button class="calc-btn" data-value="7">7</button>
-                <button class="calc-btn" data-value="8">8</button>
-                <button class="calc-btn" data-value="9">9</button>
-                <button class="calc-btn operator" data-value="*">×</button>
+                    <div class="unit-box">
+                        <label for="toUnit">To</label>
+                        <select id="toUnit"></select>
+                    </div>
+                </div>
 
-                <button class="calc-btn" data-value="4">4</button>
-                <button class="calc-btn" data-value="5">5</button>
-                <button class="calc-btn" data-value="6">6</button>
-                <button class="calc-btn operator" data-value="-">−</button>
-
-                <button class="calc-btn" data-value="1">1</button>
-                <button class="calc-btn" data-value="2">2</button>
-                <button class="calc-btn" data-value="3">3</button>
-                <button class="calc-btn operator" data-value="+">+</button>
-
-                <button class="calc-btn" data-value="0" style="grid-column: span 2;">0</button>
-                <button class="calc-btn" data-value=".">.</button>
-                <button class="calc-btn equal" data-value="equals">=</button>
+                <div class="result-box" id="conversionResult">Result: 1 meter = 100 cm</div>
             </div>
         </aside>
     </div>
@@ -296,12 +525,34 @@
         const chatBox = document.getElementById('chat-box');
         const input = document.getElementById('userInput');
         const calcDisplay = document.getElementById('calc-display');
-        const calculatorPanel = document.getElementById('calculatorPanel');
+        const scienceWorkspace = document.getElementById('scienceWorkspace');
         const modeToggle = document.getElementById('modeToggle');
         const solveAiBtn = document.getElementById('solveAiBtn');
+        const darkModeToggle = document.getElementById('darkModeToggle');
 
         let calcExpression = '0';
         let scientificMode = false;
+
+        const unitData = {
+            length: {
+                meter: { label: 'Meter', toBase: (v) => v, fromBase: (v) => v },
+                kilometer: { label: 'Kilometer', toBase: (v) => v * 1000, fromBase: (v) => v / 1000 },
+                centimeter: { label: 'Centimeter', toBase: (v) => v / 100, fromBase: (v) => v * 100 },
+                mile: { label: 'Mile', toBase: (v) => v * 1609.344, fromBase: (v) => v / 1609.344 },
+                foot: { label: 'Foot', toBase: (v) => v * 0.3048, fromBase: (v) => v / 0.3048 }
+            },
+            mass: {
+                kilogram: { label: 'Kilogram', toBase: (v) => v, fromBase: (v) => v },
+                gram: { label: 'Gram', toBase: (v) => v / 1000, fromBase: (v) => v * 1000 },
+                pound: { label: 'Pound', toBase: (v) => v * 0.45359237, fromBase: (v) => v / 0.45359237 },
+                ounce: { label: 'Ounce', toBase: (v) => v * 0.0283495231, fromBase: (v) => v / 0.0283495231 }
+            },
+            temperature: {
+                celsius: { label: 'Celsius', toBase: (v) => v, fromBase: (v) => v },
+                fahrenheit: { label: 'Fahrenheit', toBase: (v) => (v - 32) * 5 / 9, fromBase: (v) => (v * 9 / 5) + 32 },
+                kelvin: { label: 'Kelvin', toBase: (v) => v - 273.15, fromBase: (v) => v + 273.15 }
+            }
+        };
 
         function updateCalcDisplay() {
             calcDisplay.textContent = calcExpression || '0';
@@ -338,13 +589,8 @@
                 return;
             }
 
-            if (value === 'pi') {
-                value = 'Math.PI';
-            }
-
-            if (value === 'e') {
-                value = 'Math.E';
-            }
+            if (value === 'pi') value = 'Math.PI';
+            if (value === 'e') value = 'Math.E';
 
             if (calcExpression === '0' && !isOperator(value) && !['.', 'Math.PI', 'Math.E', 'sin(', 'cos(', 'tan(', 'log(', 'ln(', 'sqrt(', 'abs(', 'exp('].includes(value)) {
                 calcExpression = value;
@@ -369,23 +615,18 @@
                 .replace(/ln\(/gi, 'Math.log(')
                 .replace(/sqrt\(/gi, 'Math.sqrt(')
                 .replace(/abs\(/gi, 'Math.abs(')
-                .replace(/exp\(/gi, 'Math.exp(')
-                .replace(/Math\.PI\s*\*\s*Math\.PI/g, 'Math.PI*Math.PI');
+                .replace(/exp\(/gi, 'Math.exp(');
         }
 
         function evaluateCalc() {
             const raw = calcExpression.trim();
-            if (!raw || raw === '0') {
-                return;
-            }
+            if (!raw || raw === '0') return;
 
             try {
                 const sanitized = normalizeExpression(raw);
                 const result = Function(`"use strict"; return (${sanitized});`)();
 
-                if (!Number.isFinite(result)) {
-                    throw new Error('Invalid result');
-                }
+                if (!Number.isFinite(result)) throw new Error('Invalid result');
 
                 calcExpression = Number.isInteger(result) ? String(result) : Number(result.toFixed(10)).toString();
                 updateCalcDisplay();
@@ -396,7 +637,7 @@
 
         function toggleScientificMode() {
             scientificMode = !scientificMode;
-            calculatorPanel.classList.toggle('scientific-mode', scientificMode);
+            scienceWorkspace.classList.toggle('scientific-mode', scientificMode);
             modeToggle.textContent = scientificMode ? 'Standard mode' : 'Scientific mode';
         }
 
@@ -425,6 +666,45 @@
             }
         }
 
+        function populateUnitSelectors() {
+            const unitType = document.getElementById('unitType');
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            const type = unitType.value;
+
+            const options = Object.entries(unitData[type]).map(([key, info]) => `<option value="${key}">${info.label}</option>`).join('');
+            fromUnit.innerHTML = options;
+            toUnit.innerHTML = options;
+
+            const defaultFrom = Object.keys(unitData[type])[0];
+            const defaultTo = Object.keys(unitData[type])[1] || defaultFrom;
+            fromUnit.value = defaultFrom;
+            toUnit.value = defaultTo;
+            updateConversionResult();
+        }
+
+        function updateConversionResult() {
+            const valueInput = document.getElementById('unitValue');
+            const unitType = document.getElementById('unitType');
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            const resultBox = document.getElementById('conversionResult');
+
+            const type = unitType.value;
+            const from = fromUnit.value;
+            const to = toUnit.value;
+            const value = Number(valueInput.value || 0);
+
+            if (type === 'temperature') {
+                const result = unitData[type][to].fromBase(unitData[type][from].toBase(value));
+                resultBox.textContent = `Result: ${value} ${unitData[type][from].label} = ${result.toFixed(4)} ${unitData[type][to].label}`;
+                return;
+            }
+
+            const result = unitData[type][to].fromBase(unitData[type][from].toBase(value));
+            resultBox.textContent = `Result: ${value} ${unitData[type][from].label} = ${result.toFixed(4)} ${unitData[type][to].label}`;
+        }
+
         document.querySelectorAll('.calc-btn').forEach(button => {
             button.addEventListener('click', () => appendToCalc(button.dataset.value));
         });
@@ -447,6 +727,11 @@
             sendAiPrompt(`Solve this math problem step by step and explain clearly: ${expression}`);
         });
 
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            darkModeToggle.textContent = document.body.classList.contains('dark') ? 'Light mode' : 'Dark mode';
+        });
+
         document.getElementById('sendBtn').onclick = async () => {
             const userText = input.value.trim();
             if (!userText) return;
@@ -462,22 +747,21 @@
 
         document.addEventListener('keydown', (event) => {
             const key = event.key;
-
-            if (/^[0-9]$/.test(key)) {
-                appendToCalc(key);
-            } else if (['+', '-', '*', '/', '(', ')', '.'].includes(key)) {
-                appendToCalc(key);
-            } else if (key === '^') {
-                appendToCalc('^');
-            } else if (key === 'Enter') {
-                evaluateCalc();
-            } else if (key === 'Backspace') {
-                appendToCalc('DEL');
-            } else if (key === 'Escape') {
-                appendToCalc('clear');
-            }
+            if (/^[0-9]$/.test(key)) appendToCalc(key);
+            else if (['+', '-', '*', '/', '(', ')', '.'].includes(key)) appendToCalc(key);
+            else if (key === '^') appendToCalc('^');
+            else if (key === 'Enter') evaluateCalc();
+            else if (key === 'Backspace') appendToCalc('DEL');
+            else if (key === 'Escape') appendToCalc('clear');
         });
 
+        document.getElementById('unitType').addEventListener('change', populateUnitSelectors);
+        document.getElementById('fromUnit').addEventListener('change', updateConversionResult);
+        document.getElementById('toUnit').addEventListener('change', updateConversionResult);
+        document.getElementById('unitValue').addEventListener('input', updateConversionResult);
+        document.getElementById('convertBtn').addEventListener('click', updateConversionResult);
+
+        populateUnitSelectors();
         updateCalcDisplay();
     </script>
 </body>
