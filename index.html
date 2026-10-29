@@ -7,42 +7,299 @@
     <style>
         :root {
             --primary: #2563eb;
+            --primary-dark: #1d4ed8;
             --bg: #f8fafc;
+            --panel: #ffffff;
             --text: #1e293b;
+            --muted: #64748b;
+            --light: #e2e8f0;
+            --success: #16a34a;
+            --danger: #dc2626;
         }
-        body { font-family: 'Segoe UI', sans-serif; max-width: 700px; margin: 40px auto; padding: 20px; background-color: var(--bg); color: var(--text); }
-        h2 { color: var(--primary); text-align: center; }
-        #chat-box { 
-            border: 2px solid #e2e8f0; padding: 20px; height: 400px; 
-            overflow-y: auto; margin-bottom: 20px; border-radius: 12px; 
-            background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #eff6ff 0%, var(--bg) 100%);
+            color: var(--text);
         }
-        .message { margin-bottom: 15px; padding: 10px; border-radius: 8px; }
-        .user { background: #dbeafe; text-align: right; }
-        .ai { background: #f1f5f9; border-left: 4px solid var(--primary); }
-        .input-group { display: flex; gap: 10px; }
-        input { flex-grow: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; }
-        button { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #1d4ed8; }
+
+        .app-shell {
+            display: grid;
+            grid-template-columns: 1.7fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 2px solid var(--light);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            padding: 22px;
+        }
+
+        h2, h3 {
+            color: var(--primary);
+            margin: 0 0 18px;
+            text-align: center;
+        }
+
+        #chat-box {
+            border: 2px solid #e2e8f0;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            background: #f8fafc;
+            box-shadow: inset 0 1px 3px rgba(148, 163, 184, 0.2);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .user {
+            background: #dbeafe;
+            text-align: right;
+        }
+
+        .ai {
+            background: #f1f5f9;
+            border-left: 4px solid var(--primary);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex-grow: 1;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        .calculator-panel {
+            position: sticky;
+            top: 20px;
+        }
+
+        .task-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .task-btn {
+            background: #eff6ff;
+            color: var(--text);
+            border: 1px solid #bfdbfe;
+            font-size: 0.85rem;
+            padding: 9px 10px;
+        }
+
+        .task-btn:hover {
+            background: #dbeafe;
+        }
+
+        #calc-display {
+            background: #0f172a;
+            color: white;
+            min-height: 72px;
+            border-radius: 12px;
+            padding: 18px 14px;
+            text-align: right;
+            font-size: clamp(1.4rem, 2vw, 2rem);
+            margin-bottom: 14px;
+            overflow-wrap: break-word;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .calc-btn {
+            background: #e2e8f0;
+            color: var(--text);
+            padding: 14px 10px;
+            font-size: 1rem;
+        }
+
+        .calc-btn.operator {
+            background: #dbeafe;
+        }
+
+        .calc-btn.equal {
+            background: var(--success);
+            color: white;
+        }
+
+        .calc-btn.clear {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        @media (max-width: 860px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .calculator-panel {
+                position: static;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="app-shell">
+        <section class="panel ai-panel">
+            <h2>Physics & Science AI Assistant</h2>
+            <div id="chat-box"></div>
+            <div class="input-group">
+                <input type="text" id="userInput" placeholder="Ask about physics, space, or type a math expression...">
+                <button id="sendBtn">Send</button>
+            </div>
+        </section>
 
-    <h2>Physics & Science AI Assistant</h2>
-    <div id="chat-box"></div>
-    <div class="input-group">
-        <input type="text" id="userInput" placeholder="Ask about physics, space, or ISS...">
-        <button id="sendBtn">Send</button>
+        <aside class="panel calculator-panel">
+            <h3>Math Calculator</h3>
+
+            <div class="task-list">
+                <button class="task-btn" data-expression="12 * 8">12 × 8</button>
+                <button class="task-btn" data-expression="45 + 87">45 + 87</button>
+                <button class="task-btn" data-expression="(120 / 5) + 18">(120 / 5) + 18</button>
+                <button class="task-btn" data-expression="sqrt(81) + 9">sqrt(81) + 9</button>
+                <button class="task-btn" data-expression="(3 + 5) * 7">(3 + 5) × 7</button>
+                <button class="task-btn" data-expression="2 ^ 8">2^8</button>
+            </div>
+
+            <div id="calc-display">0</div>
+            <div class="calc-grid">
+                <button class="calc-btn clear" data-value="clear">C</button>
+                <button class="calc-btn operator" data-value="(">(</button>
+                <button class="calc-btn operator" data-value=")">)</button>
+                <button class="calc-btn operator" data-value="/">÷</button>
+
+                <button class="calc-btn" data-value="7">7</button>
+                <button class="calc-btn" data-value="8">8</button>
+                <button class="calc-btn" data-value="9">9</button>
+                <button class="calc-btn operator" data-value="*">×</button>
+
+                <button class="calc-btn" data-value="4">4</button>
+                <button class="calc-btn" data-value="5">5</button>
+                <button class="calc-btn" data-value="6">6</button>
+                <button class="calc-btn operator" data-value="-">−</button>
+
+                <button class="calc-btn" data-value="1">1</button>
+                <button class="calc-btn" data-value="2">2</button>
+                <button class="calc-btn" data-value="3">3</button>
+                <button class="calc-btn operator" data-value="+">+</button>
+
+                <button class="calc-btn" data-value="0" style="grid-column: span 2;">0</button>
+                <button class="calc-btn" data-value=".">.</button>
+                <button class="calc-btn equal" data-value="equals">=</button>
+            </div>
+        </aside>
     </div>
 
     <script>
         const chatBox = document.getElementById('chat-box');
         const input = document.getElementById('userInput');
+        const calcDisplay = document.getElementById('calc-display');
+
+        let calcExpression = '0';
+
+        function updateCalcDisplay() {
+            calcDisplay.textContent = calcExpression || '0';
+        }
+
+        function appendToCalc(value) {
+            if (value === 'clear') {
+                calcExpression = '0';
+                updateCalcDisplay();
+                return;
+            }
+
+            if (value === 'equals') {
+                evaluateCalc();
+                return;
+            }
+
+            if (calcExpression === '0' && !['+', '-', '*', '/', '.', '(', ')', '^'].includes(value)) {
+                calcExpression = value;
+            } else {
+                calcExpression += value;
+            }
+
+            updateCalcDisplay();
+        }
+
+        function evaluateCalc() {
+            const expression = calcExpression
+                .replace(/×/g, '*')
+                .replace(/÷/g, '/');
+
+            try {
+                const sanitized = expression.replace(/\^/g, '**').replace(/sqrt\(/g, 'Math.sqrt(');
+                const result = Function(`"use strict"; return (${sanitized});`)();
+
+                if (!Number.isFinite(result)) {
+                    throw new Error('Invalid calculation');
+                }
+
+                calcExpression = Number.isInteger(result) ? String(result) : Number(result.toFixed(10)).toString();
+                updateCalcDisplay();
+            } catch (error) {
+                calcExpression = 'Error';
+                updateCalcDisplay();
+            }
+        }
+
+        document.querySelectorAll('.calc-btn').forEach(button => {
+            button.addEventListener('click', () => appendToCalc(button.dataset.value));
+        });
+
+        document.querySelectorAll('.task-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                calcExpression = button.dataset.expression;
+                updateCalcDisplay();
+            });
+        });
 
         document.getElementById('sendBtn').onclick = async () => {
-            const userText = input.value;
+            const userText = input.value.trim();
             if (!userText) return;
-            
+
             chatBox.innerHTML += `<div class="message user"><b>You:</b> ${userText}</div>`;
             input.value = '';
             chatBox.innerHTML += `<div class="message ai" id="loading"><i>AI is thinking...</i></div>`;
@@ -50,8 +307,8 @@
 
             try {
                 const response = await fetch('/api/chat', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ prompt: userText })
                 });
 
@@ -64,6 +321,12 @@
                 chatBox.innerHTML += `<div class="message ai" style="color:red;">Error: Could not reach server.</div>`;
             }
         };
+
+        input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                document.getElementById('sendBtn').click();
+            }
+        });
     </script>
 </body>
 </html>
