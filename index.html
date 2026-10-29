@@ -15,13 +15,14 @@
             --light: #e2e8f0;
             --success: #16a34a;
             --danger: #dc2626;
+            --warning: #f59e0b;
         }
 
         * { box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 40px auto;
             padding: 20px;
             background: linear-gradient(135deg, #eff6ff 0%, var(--bg) 100%);
@@ -111,6 +112,26 @@
             top: 20px;
         }
 
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .small-btn {
+            background: #eff6ff;
+            color: var(--text);
+            border: 1px solid #bfdbfe;
+            font-size: 0.8rem;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+
+        .small-btn:hover {
+            background: #dbeafe;
+        }
+
         .task-list {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -122,7 +143,7 @@
             background: #eff6ff;
             color: var(--text);
             border: 1px solid #bfdbfe;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             padding: 9px 10px;
         }
 
@@ -169,6 +190,22 @@
             color: var(--danger);
         }
 
+        .calc-btn.special {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .scientific-controls {
+            display: none;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .scientific-mode .scientific-controls {
+            display: grid;
+        }
+
         @media (max-width: 860px) {
             .app-shell {
                 grid-template-columns: 1fr;
@@ -191,8 +228,13 @@
             </div>
         </section>
 
-        <aside class="panel calculator-panel">
+        <aside class="panel calculator-panel" id="calculatorPanel">
             <h3>Math Calculator</h3>
+
+            <div class="quick-actions">
+                <button class="small-btn" id="modeToggle">Scientific mode</button>
+                <button class="small-btn" id="solveAiBtn">Solve with AI</button>
+            </div>
 
             <div class="task-list">
                 <button class="task-btn" data-expression="12 * 8">12 × 8</button>
@@ -204,6 +246,24 @@
             </div>
 
             <div id="calc-display">0</div>
+
+            <div class="scientific-controls">
+                <button class="calc-btn special" data-value="sin(">sin</button>
+                <button class="calc-btn special" data-value="cos(">cos</button>
+                <button class="calc-btn special" data-value="tan(">tan</button>
+                <button class="calc-btn special" data-value="pi">π</button>
+
+                <button class="calc-btn special" data-value="log(">log</button>
+                <button class="calc-btn special" data-value="ln(">ln</button>
+                <button class="calc-btn special" data-value="sqrt(">√</button>
+                <button class="calc-btn special" data-value="^">xʸ</button>
+
+                <button class="calc-btn special" data-value="abs(">abs</button>
+                <button class="calc-btn special" data-value="exp(">exp</button>
+                <button class="calc-btn special" data-value="e">e</button>
+                <button class="calc-btn special" data-value="DEL">⌫</button>
+            </div>
+
             <div class="calc-grid">
                 <button class="calc-btn clear" data-value="clear">C</button>
                 <button class="calc-btn operator" data-value="(">(</button>
@@ -236,11 +296,24 @@
         const chatBox = document.getElementById('chat-box');
         const input = document.getElementById('userInput');
         const calcDisplay = document.getElementById('calc-display');
+        const calculatorPanel = document.getElementById('calculatorPanel');
+        const modeToggle = document.getElementById('modeToggle');
+        const solveAiBtn = document.getElementById('solveAiBtn');
 
         let calcExpression = '0';
+        let scientificMode = false;
 
         function updateCalcDisplay() {
             calcDisplay.textContent = calcExpression || '0';
+        }
+
+        function isOperator(value) {
+            return ['+', '-', '*', '/', '^', '(', ')'].includes(value);
+        }
+
+        function setCalculationError() {
+            calcExpression = 'Error';
+            updateCalcDisplay();
         }
 
         function appendToCalc(value) {
@@ -250,12 +323,30 @@
                 return;
             }
 
+            if (value === 'DEL') {
+                if (calcExpression.length <= 1) {
+                    calcExpression = '0';
+                } else {
+                    calcExpression = calcExpression.slice(0, -1);
+                }
+                updateCalcDisplay();
+                return;
+            }
+
             if (value === 'equals') {
                 evaluateCalc();
                 return;
             }
 
-            if (calcExpression === '0' && !['+', '-', '*', '/', '.', '(', ')', '^'].includes(value)) {
+            if (value === 'pi') {
+                value = 'Math.PI';
+            }
+
+            if (value === 'e') {
+                value = 'Math.E';
+            }
+
+            if (calcExpression === '0' && !isOperator(value) && !['.', 'Math.PI', 'Math.E', 'sin(', 'cos(', 'tan(', 'log(', 'ln(', 'sqrt(', 'abs(', 'exp('].includes(value)) {
                 calcExpression = value;
             } else {
                 calcExpression += value;
@@ -264,24 +355,73 @@
             updateCalcDisplay();
         }
 
-        function evaluateCalc() {
-            const expression = calcExpression
+        function normalizeExpression(expression) {
+            return expression
                 .replace(/×/g, '*')
-                .replace(/÷/g, '/');
+                .replace(/÷/g, '/')
+                .replace(/\^/g, '**')
+                .replace(/pi/gi, 'Math.PI')
+                .replace(/e\b/gi, 'Math.E')
+                .replace(/sin\(/gi, 'Math.sin(')
+                .replace(/cos\(/gi, 'Math.cos(')
+                .replace(/tan\(/gi, 'Math.tan(')
+                .replace(/log\(/gi, 'Math.log10(')
+                .replace(/ln\(/gi, 'Math.log(')
+                .replace(/sqrt\(/gi, 'Math.sqrt(')
+                .replace(/abs\(/gi, 'Math.abs(')
+                .replace(/exp\(/gi, 'Math.exp(')
+                .replace(/Math\.PI\s*\*\s*Math\.PI/g, 'Math.PI*Math.PI');
+        }
+
+        function evaluateCalc() {
+            const raw = calcExpression.trim();
+            if (!raw || raw === '0') {
+                return;
+            }
 
             try {
-                const sanitized = expression.replace(/\^/g, '**').replace(/sqrt\(/g, 'Math.sqrt(');
+                const sanitized = normalizeExpression(raw);
                 const result = Function(`"use strict"; return (${sanitized});`)();
 
                 if (!Number.isFinite(result)) {
-                    throw new Error('Invalid calculation');
+                    throw new Error('Invalid result');
                 }
 
                 calcExpression = Number.isInteger(result) ? String(result) : Number(result.toFixed(10)).toString();
                 updateCalcDisplay();
             } catch (error) {
-                calcExpression = 'Error';
-                updateCalcDisplay();
+                setCalculationError();
+            }
+        }
+
+        function toggleScientificMode() {
+            scientificMode = !scientificMode;
+            calculatorPanel.classList.toggle('scientific-mode', scientificMode);
+            modeToggle.textContent = scientificMode ? 'Standard mode' : 'Scientific mode';
+        }
+
+        async function sendAiPrompt(promptText) {
+            const safeText = promptText.trim();
+            if (!safeText) return;
+
+            chatBox.innerHTML += `<div class="message user"><b>You:</b> ${safeText}</div>`;
+            chatBox.innerHTML += `<div class="message ai" id="loading"><i>AI is thinking...</i></div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: safeText })
+                });
+
+                const data = await response.json();
+                document.getElementById('loading').remove();
+                chatBox.innerHTML += `<div class="message ai"><b>AI:</b> ${data.reply}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                document.getElementById('loading').remove();
+                chatBox.innerHTML += `<div class="message ai" style="color:red;">Error: Could not reach server.</div>`;
             }
         }
 
@@ -296,30 +436,22 @@
             });
         });
 
+        modeToggle.addEventListener('click', toggleScientificMode);
+
+        solveAiBtn.addEventListener('click', () => {
+            const expression = calcExpression.trim();
+            if (!expression || expression === '0' || expression === 'Error') {
+                sendAiPrompt('Solve a math problem step by step and explain clearly.');
+                return;
+            }
+            sendAiPrompt(`Solve this math problem step by step and explain clearly: ${expression}`);
+        });
+
         document.getElementById('sendBtn').onclick = async () => {
             const userText = input.value.trim();
             if (!userText) return;
-
-            chatBox.innerHTML += `<div class="message user"><b>You:</b> ${userText}</div>`;
+            await sendAiPrompt(userText);
             input.value = '';
-            chatBox.innerHTML += `<div class="message ai" id="loading"><i>AI is thinking...</i></div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: userText })
-                });
-
-                const data = await response.json();
-                document.getElementById('loading').remove();
-                chatBox.innerHTML += `<div class="message ai"><b>AI:</b> ${data.reply}</div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            } catch (error) {
-                document.getElementById('loading').remove();
-                chatBox.innerHTML += `<div class="message ai" style="color:red;">Error: Could not reach server.</div>`;
-            }
         };
 
         input.addEventListener('keydown', (event) => {
@@ -327,6 +459,26 @@
                 document.getElementById('sendBtn').click();
             }
         });
+
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+
+            if (/^[0-9]$/.test(key)) {
+                appendToCalc(key);
+            } else if (['+', '-', '*', '/', '(', ')', '.'].includes(key)) {
+                appendToCalc(key);
+            } else if (key === '^') {
+                appendToCalc('^');
+            } else if (key === 'Enter') {
+                evaluateCalc();
+            } else if (key === 'Backspace') {
+                appendToCalc('DEL');
+            } else if (key === 'Escape') {
+                appendToCalc('clear');
+            }
+        });
+
+        updateCalcDisplay();
     </script>
 </body>
 </html>
